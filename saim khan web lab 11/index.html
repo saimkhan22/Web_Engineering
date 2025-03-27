@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            font-weight: bold;
+        }
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
+        img {
+            width: 200px;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select a Country:</h1>
+    <select id="countrySelect" onchange="displayCountryInfo()"></select>
+    
+    <h2>Country Flag:</h2>
+    <img id="countryFlag" src="" alt="Country Flag">
+    
+    <h2>Population:</h2>
+    <p id="countryPopulation"></p>
+    
+    <script>
+        function loadCountries() {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://restcountries.com/v3.1/all", true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let countries = JSON.parse(xhr.responseText);
+                    let select = document.getElementById("countrySelect");
+                    select.innerHTML = "";
+                    countries.forEach(country => {
+                        let option = document.createElement("option");
+                        option.value = country.cca2;
+                        option.textContent = country.name.common;
+                        option.dataset.flag = country.flags.png;
+                        option.dataset.population = country.population;
+                        select.appendChild(option);
+                    });
+                    displayCountryInfo();
+                }
+            };
+            xhr.send();
+        }
+
+        function displayCountryInfo() {
+            let select = document.getElementById("countrySelect");
+            let selectedOption = select.options[select.selectedIndex];
+            document.getElementById("countryFlag").src = selectedOption.dataset.flag;
+            document.getElementById("countryPopulation").textContent = "Population: " + Number(selectedOption.dataset.population).toLocaleString();
+        }
+
+        loadCountries();
+    </script>
+</body>
+</html>
